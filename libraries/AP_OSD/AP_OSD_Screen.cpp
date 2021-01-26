@@ -1213,6 +1213,7 @@ void AP_OSD_Screen::draw_batused(uint8_t x, uint8_t y)
 //Thanks to night-ghost for the approach.
 void AP_OSD_Screen::draw_message(uint8_t x, uint8_t y)
 {
+    x = 2; //messages get rendered across a whole row. User param x is ignored.
     AP_Notify * notify = AP_Notify::get_singleton();
     if (notify) {
         int32_t visible_time = AP_HAL::millis() - notify->get_text_updated_millis();
@@ -1256,6 +1257,9 @@ void AP_OSD_Screen::draw_message(uint8_t x, uint8_t y)
 
                 //trim invisible part
                 buffer[end_position] = 0;
+            } else if (len < message_visible_width) {
+                //for short messages, start writing closer to the middle to center the text
+                x += (message_visible_width - len)/2;
             }
 
             backend->write(x, y, buffer + start_position);
